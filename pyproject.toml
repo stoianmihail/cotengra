@@ -2,7 +2,8 @@
 build-backend = "setuptools.build_meta"
 requires = [
     "setuptools>=45",
-    "setuptools_scm[toml]>=6.2"
+    "setuptools_scm[toml]>=6.2",
+    "versioneer[toml]"
 ]
 
 [tool.setuptools_scm]
@@ -29,3 +30,10 @@ ignore = ["E741"]
 [tool.black]
 line-length = 79
 target-version = ['py38']
+
+[tool.versioneer]
+VCS = "git"
+style = "pep440"
+versionfile_source = "cotengra/_version.py"
+versionfile_build = "cotengra/_version.py"
+tag_prefix = ""

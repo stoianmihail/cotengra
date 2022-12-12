@@ -1,5 +1,6 @@
 from setuptools import setup, find_packages
 from os import path
+import versioneer
 
 here = path.abspath(path.dirname(__file__))
 
@@ -9,7 +10,8 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='cotengra',
-    version='0.1.0',
+    version=versioneer.get_version(),
+    cmdclass=versioneer.get_cmdclass(),
     description='opt_einsum compatible contractors for large tensor networks',
     long_description=long_description,
     url='https://github.com/jcmgray/cotengra',

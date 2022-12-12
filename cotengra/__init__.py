@@ -258,3 +258,6 @@ try:
 except KeyError:
     # if reloading cotengra e.g. library entries already registered
     pass
+
+from . import _version
+__version__ = _version.get_versions()['version']
