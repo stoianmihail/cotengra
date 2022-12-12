@@ -9,8 +9,11 @@ from concurrent.futures import ThreadPoolExecutor
 
 # generate a random contraction
 inputs, output, shapes, size_dict = ctg.utils.rand_equation(
-    140, 3, n_out=2, seed=666,
+    10, 3, n_out=2, seed=666,
 )
+
+print(shapes)
+
 arrays = [np.random.randn(*s) for s in shapes]
 
 # ------------------------ Find the contraction tree ------------------------ #
@@ -28,6 +31,8 @@ opt = ctg.HyperOptimizer(
 
 # run the optimizer and extract the contraction tree
 tree = opt.search(inputs, output, size_dict)
+
+print(tree)
 
 # ------------------------- Perform the contraction ------------------------- #
 

@@ -421,6 +421,9 @@ class ContractionTree:
         """
         if len(node) == 1:
             return 0
+
+        # print(f'[get_flops]')
+
         involved = self.get_involved(node)
         removed = self.get_removed(node)
         return flop_count(involved, removed, 2, self.size_dict)

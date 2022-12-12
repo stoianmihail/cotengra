@@ -101,6 +101,8 @@ def list_hyper_functions():
 
 def find_tree(*args, **kwargs):
     method = kwargs.pop('method')
+    # Labels | greedy
+    print(f'[find_tree] method={method}')
     tree = _PATH_FNS[method](*args, **kwargs)
     return {
         'tree': tree,
@@ -207,6 +209,9 @@ class SlicedReconfTrialFn:
         self.opts = opts
 
     def __call__(self, *args, **kwargs):
+        print(f'[SlicedReconfTrialFn] call!')
+        print(f'[SlicedReconfTrialFn] trial_fn={self.trial_fn}') # find_tree
+        
         trial = self.trial_fn(*args, **kwargs)
         tree = trial['tree']
 
@@ -265,6 +270,7 @@ class ComputeScore:
         self.score_compression = score_compression
 
     def __call__(self, *args, **kwargs):
+        print(f'[ComputeScore] self.fn={self.fn}')
         trial = self.fn(*args, **kwargs)
         trial['score'] = self.score_fn(trial)**self.score_compression
         return trial
@@ -417,6 +423,7 @@ class HyperOptimizer(PathOptimizer):
 
     @parallel.setter
     def parallel(self, parallel):
+        print(f'parallel={parallel}')
         self._parallel = parallel
         self._pool = parse_parallel_arg(parallel)
         if self._pool is not None:
@@ -468,6 +475,7 @@ class HyperOptimizer(PathOptimizer):
                 trial_fn = ReconfTrialFn(trial_fn, **self.reconf_opts)
 
         # make sure score computation is performed worker side
+        print(f'score_fn={self._score_fn}')
         trial_fn = ComputeScore(
             trial_fn,
             score_fn=self._score_fn,
@@ -555,6 +563,7 @@ class HyperOptimizer(PathOptimizer):
 
         # start a timer?
         if self.max_time is not None:
+            print(f'timer?')
             t0 = time.time()
             if isinstance(self.max_time, str):
 
@@ -583,14 +592,18 @@ class HyperOptimizer(PathOptimizer):
 
         trial_fn, trial_args = self.setup(inputs, output, size_dict)
 
+        print(f'trial_fn={trial_fn}, trial_args={trial_args}')
+
         r_start = self._repeats_start + len(self.scores)
         r_stop = r_start + self.max_repeats
         repeats = range(r_start, r_stop)
 
         # create the trials lazily
         if self._pool is not None:
+            print(f'[_search] _gen_results_parallel!')
             trials = self._gen_results_parallel(repeats, trial_fn, trial_args)
         else:
+            print(f'[_search] _gen_results')
             trials = self._gen_results(repeats, trial_fn, trial_args)
 
         if self.progbar:
@@ -601,12 +614,14 @@ class HyperOptimizer(PathOptimizer):
 
         # assess the trials
         for trial in trials:
-
+            print(f'[trial] trial={trial}')
             # keep track of all costs and sizes
             self.costs_flops.append(trial['flops'])
             self.costs_write.append(trial['write'])
             self.costs_size.append(trial['size'])
             self.scores.append(trial['score'])
+
+            print(f'score={trial["score"]}, best={self.best["score"]}')
 
             # check if we have found a new best
             if trial['score'] < self.best['score']:
@@ -634,6 +649,9 @@ class HyperOptimizer(PathOptimizer):
         """Run this optimizer and return the ``ContractionTree`` for the best
         path it finds.
         """
+
+        print(f'isnide search!')
+
         self._search(inputs, output, size_dict,)
         return self.tree
 
